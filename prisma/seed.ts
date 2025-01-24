@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
-
+import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
+const saltRounds = 10;
 
 async function main() {
   await prisma.character.deleteMany();
@@ -54,9 +55,11 @@ async function main() {
 
   console.log('Personnages créés.');
 
+  const passwordCrypted = await bcrypt.hash('admin', saltRounds);
+  
   const user = await prisma.users.createMany({
     data:[
-      { email : 'admin@gmail.com', password: 'admin'},
+      { email : 'admin@gmail.com', password: passwordCrypted}
     ]
   })
 

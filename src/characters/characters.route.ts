@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { getCharacters, getCharacterById , createCharacter, updateCharacter, deleteCharacter} from "./characters.controller";
+import { verifyJWT } from '../common/auth.middleware';
 
-const router = Router();
+const charactersRouter = Router();
 
-router.get('/', getCharacters)
+charactersRouter.get('/', getCharacters)
+charactersRouter.get('/:id', getCharacterById)
 
-router.post('/', createCharacter)
-router.patch('/:id', updateCharacter);
-router.get('/:id', getCharacterById)
-router.delete('/:id', deleteCharacter);
-export { router };
+charactersRouter.post('/', verifyJWT, createCharacter)
+charactersRouter.patch('/:id', verifyJWT, updateCharacter);
+charactersRouter.delete('/:id', verifyJWT, deleteCharacter);
+export { charactersRouter };
