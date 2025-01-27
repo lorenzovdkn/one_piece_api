@@ -1,9 +1,7 @@
-import { Character, PrismaClient } from '@prisma/client';
+import { Character } from '@prisma/client';
 import { Request, Response } from 'express';
+import prisma from '../client';
 import _ from 'lodash';
-
-const prisma = new PrismaClient();
-
 
 
 export const getCharacters = async (req:Request, res:Response): Promise<void> => {
@@ -12,11 +10,11 @@ export const getCharacters = async (req:Request, res:Response): Promise<void> =>
         const characters = await prisma.character.findMany();
         if (characters.length === 0) {
             res.status(204).send([])
-        }else {
-            res.status(200).send(characters);
+            return;
         }
-    }catch(error) {
-        res.status(500).send( {error: error})
+        res.status(200).send(characters);
+    }catch(error : any) {
+        res.status(500).send( {error: error.message})
     }
 };
 
@@ -26,6 +24,7 @@ export const getCharacterById = async (req:Request, res:Response): Promise<void>
 
         if (isNaN(characterId)) {
             res.status(400).json({ error: 'ID Invalid. Must be a number.' });
+            return;
         }
 
         const character = await prisma.character.findUnique({
@@ -35,9 +34,9 @@ export const getCharacterById = async (req:Request, res:Response): Promise<void>
 
         if (!character) {
             res.status(404).json({ error: 'Character not found.' });
-        }else {
-            res.status(200).send(character);
+            return;
         }
+        res.status(200).send(character);
     }catch(error) {
         res.status(500).send( {error: error} )
     }
@@ -45,19 +44,17 @@ export const getCharacterById = async (req:Request, res:Response): Promise<void>
 
 export const createCharacter = async (req:Request, res:Response): Promise<void> => {
     try {
-        const { name, affiliation, lifePoints, size, age, weight, imageUrl } = req.body as {
-            name: string;
-            affiliation: { name: string };
-            lifePoints: number;
-            size?: number;
-            age?: number;
-            weight?: number;
-            imageUrl?: string;
-          };
+        const { name, affiliation, lifePoints, size, age, weight, imageUrl } = req.body;
 
         if (!name || !affiliation || !lifePoints) { 
-            res.status(400).send( { error : "Incorrect : " + `name` + `affiliation` + `lifePoints` } )
-        }else {
+            const missingFields = [];
+            if (!name) missingFields.push('name');
+            if (!affiliation) missingFields.push('affiliation');
+            if (!lifePoints) missingFields.push('lifePoints');
+            res.status(400).send({ error: `Missing fields: ${missingFields.join(', ')}` });
+            return;
+        }
+        
 
         // search affiliation Id for the character
         let searchedAffiliation = await prisma.affiliation.findUnique({
@@ -76,23 +73,24 @@ export const createCharacter = async (req:Request, res:Response): Promise<void> 
 
         if (exisitingCharacter) {
             res.status(409).send({error : 'Character is already exisiting'});
-        }else {
-            // Create a new character
-            const newCharacter = await prisma.character.create({
-                data: {
-                name,
-                affiliationId: searchedAffiliation.id,
-                lifePoints,
-                size,
-                age,
-                weight,
-                imageUrl,
-                },
-                include: { affiliation: true },
-            });
-            
-            res.status(201).send(newCharacter);
-        }}
+            return;
+        }
+
+        // Create a new character
+        const newCharacter = await prisma.character.create({
+            data: {
+            name,
+            affiliationId: searchedAffiliation.id,
+            lifePoints,
+            size,
+            age,
+            weight,
+            imageUrl,
+            },
+            include: { affiliation: true },
+        });
+        
+        res.status(201).send(newCharacter);
           
     }catch(error : any) { 
         res.status(500).send( {error: error.message} );
@@ -104,29 +102,23 @@ export const updateCharacter = async (req:Request, res:Response): Promise<void> 
         const characterId = parseInt(req.params.id, 10);
 
         if (isNaN(characterId)) {
-            res.status(400).json({ error: 'ID invalid. Must be a number.' });
+            res.status(400).send({ error: 'ID invalid. Must be a number.' });
             return;
         }
 
+
+        debugger
         const character = await prisma.character.findUnique({
             where: { id: characterId },
             include: { affiliation: true },
         });
 
         if (!character) {
-            res.status(404).json({ error: 'Character not found.' });
+            res.status(404).send({ error: 'Character not found.' });
             return;
         }
 
-        const { name, affiliation, lifePoints, size, age, weight, imageUrl } = req.body as {
-            name: string;
-            affiliation: { name: string };
-            lifePoints: number;
-            size?: number;
-            age?: number;
-            weight?: number;
-            imageUrl?: string;
-          };
+        const { name, affiliation, lifePoints, size, age, weight, imageUrl } = req.body;
 
         // Prepare datas for the update
         const updateData: any = {};
@@ -196,7 +188,7 @@ export const deleteCharacter = async (req:Request, res:Response): Promise<void> 
         });
 
         if (!character) {
-            res.status(404).json({ error: 'Character not found.' })
+            res.status(404).send({ error: 'Character not found.' })
         }else {
 
         const deleteCharacter = await prisma.character.delete({
