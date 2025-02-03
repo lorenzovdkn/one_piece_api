@@ -6,7 +6,6 @@ import _ from 'lodash';
 import { CrudUserParamsType, LoginType, UsersType } from '../types/common.type';
 
 export const login = async (req: Request<{}, any, LoginType>, res: Response): Promise<void> => {
-  
   try {
     const { email, password} = req.body;
     const user = await prisma.users.findUnique({ where: { email: email } });
@@ -32,7 +31,7 @@ export const login = async (req: Request<{}, any, LoginType>, res: Response): Pr
     });
 
   } catch (error: any) {
-    res.status(500).send({ error: error.message });
+    res.status(500).send({ error: "Database error" });
   }
 };
 
@@ -64,7 +63,7 @@ export const register = async (req: Request<{}, any, LoginType>, res: Response):
 
     res.status(201).send();
   } catch (err: any) {
-    res.status(500).send({ error: err.message });
+    res.status(500).send({ error: "Database error" });
   }
 };
 
@@ -109,7 +108,7 @@ export const updateUser = async (req: Request<CrudUserParamsType, any, UsersType
 
     res.status(200).send(userUpdated);
   } catch (error: any) {
-    res.status(500).send({ error: error.message });
+    res.status(500).send({ error: "Database error" });
   }
 };
 
@@ -133,6 +132,6 @@ export const deleteUser = async (req : Request<CrudUserParamsType, any, UsersTyp
 
     res.status(200).send(deletedUser);
   }catch (error : any) {
-    res.status(500).send({ error: error.message });
+    res.status(500).send({ error: "Database error" });
   }
 }

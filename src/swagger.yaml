@@ -1,0 +1,245 @@
+openapi: 3.0.0
+info:
+  title: ONE PIECE TGC API
+  version: 1.0.0
+  description: API pour gérer les utilisateurs et les personnages
+servers:
+  - url: http://localhost:3000
+    description: Serveur local
+
+paths:
+  # Users endpoints
+  /users:
+    post:
+      summary: Crée un nouvel utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "john.doe@example.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '201':
+          description: Utilisateur créé
+          content:
+            application/json:
+              example:
+                id: 1
+                email: "john.doe@example.com"
+        '400':
+          description: Informations manquantes
+          content:
+            application/json:
+              example:
+                error: "Please enter all required information"
+        '409':
+          description: Email déjà existant
+          content:
+            application/json:
+              example:
+                error: "Email already exists"
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              example:
+                error: "Database error"
+
+  /users/login:
+    post:
+      summary: Connexion utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "john.doe@example.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '200':
+          description: Connexion réussie avec un token JWT
+          content:
+            application/json:
+              example:
+                token: "mockedToken"
+        '400':
+          description: Identifiants invalides
+          content:
+            application/json:
+              example:
+                error: "Invalid identifiers"
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              example:
+                error: "Database error"
+
+  /users/{id}:
+    patch:
+      summary: Met à jour un utilisateur
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "updated.email@example.com"
+                password:
+                  type: string
+                  example: "newPassword123"
+      responses:
+        '200':
+          description: Utilisateur mis à jour
+          content:
+            application/json:
+              example:
+                id: 1
+                email: "updated.email@example.com"
+    delete:
+      summary: Supprime un utilisateur
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Utilisateur supprimé avec succès
+          content:
+            application/json:
+              example:
+                id: 1
+                email: "john.doe@example.com"
+
+  # Characters endpoints
+  /characters:
+    get:
+      summary: Récupère tous les personnages
+      responses:
+        '200':
+          description: Liste des personnages
+          content:
+            application/json:
+              example:
+                - id: 1
+                  name: "Monkey D. Luffy"
+                - id: 2
+                  name: "Baggy"
+        '204':
+          description: Aucun personnage trouvé
+    post:
+      summary: Crée un personnage
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Monkey D. Luffy"
+      responses:
+        '201':
+          description: Personnage créé
+          content:
+            application/json:
+              example:
+                id: 3
+                name: "Roronoa Zoro"
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              example:
+                error: "Database error"
+
+  /characters/{id}:
+    get:
+      summary: Récupère un personnage par son ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Personnage trouvé
+          content:
+            application/json:
+              example:
+                id: 1
+                name: "Monkey D. Luffy"
+        '404':
+          description: Personnage non trouvé
+          content:
+            application/json:
+              example:
+                error: "Character not found"
+    patch:
+      summary: Met à jour un personnage
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Personnage mis à jour
+          content:
+            application/json:
+              example:
+                id: 1
+                name: "Monkey D. Luffy Updated"
+    delete:
+      summary: Supprime un personnage
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Personnage supprimé
+          content:
+            application/json:
+              example:
+                id: 1
+                name: "Monkey D. Luffy"
