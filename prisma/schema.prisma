@@ -17,6 +17,7 @@ model Character {
   age         Int?
   weight      Float?
   imageUrl    String?
+  decks        Deck[]       @relation("DeckCharacters")
 }
 
 model Affiliation {
@@ -27,6 +28,15 @@ model Affiliation {
 
 model Users {
   id       Int       @id @default(autoincrement())
-  email String    @unique
+  email String       @unique
   password String
+  decks    Deck[]    @relation("UserDecks")
+}
+
+model Deck {
+  id          Int         @id @default(autoincrement())
+  name        String
+  owner       Users       @relation("UserDecks", fields: [ownerId], references: [id])
+  ownerId     Int
+  characters  Character[] @relation("DeckCharacters")
 }

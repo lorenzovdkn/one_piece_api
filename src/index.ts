@@ -3,7 +3,9 @@ import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import { charactersRouter } from './characters/characters.route';
 import { usersRouter } from './users/users.route';
+import { decksRouter } from './decks/decks.route'
 import path from 'path';
+
 
 export const app = express();
 const port = process.env.PORT || 3000;
@@ -15,6 +17,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/characters', charactersRouter);
 app.use('/users', usersRouter);
+app.use('/decks', decksRouter)
 
 export const server = app.listen(port);
 

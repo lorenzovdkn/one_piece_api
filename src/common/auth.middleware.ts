@@ -15,9 +15,7 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
       userId: string;
     };
     const userId = decodedToken.userId;
-    req.query = {
-      userId: userId,
-    };
+    req.user = { id: userId };
     next();
   } else {
     res.sendStatus(401); // Pas de token fourni

@@ -1,4 +1,3 @@
-import { Character } from '@prisma/client';
 import { Request, Response } from 'express';
 import prisma from '../client';
 import _ from 'lodash';
@@ -14,7 +13,7 @@ export const getCharacters = async (req:Request, res:Response): Promise<void> =>
         }
         res.status(200).send(characters);
     }catch(error : any) {
-        res.status(500).send( {error: error.message})
+        res.status(500).send( {error: "Database error"})
     }
 };
 
@@ -38,7 +37,7 @@ export const getCharacterById = async (req:Request, res:Response): Promise<void>
         }
         res.status(200).send(character);
     }catch(error) {
-        res.status(500).send( {error: error} )
+        res.status(500).send( {error: "Database error"} )
     }
 };
 
@@ -93,7 +92,7 @@ export const createCharacter = async (req:Request, res:Response): Promise<void> 
         res.status(201).send(newCharacter);
           
     }catch(error : any) { 
-        res.status(500).send( {error: error.message} );
+        res.status(500).send( {error: "Database error"} );
     }
 };
 

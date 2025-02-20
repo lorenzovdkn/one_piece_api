@@ -2,16 +2,59 @@ openapi: 3.0.0
 info:
   title: ONE PIECE TGC API
   version: 1.0.0
-  description: API pour gérer les utilisateurs et les personnages
+  description: API pour gérer les utilisateurs et les personnages dans le jeu de cartes ONE PIECE.
+
 servers:
   - url: http://localhost:3000
     description: Serveur local
 
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          example: "john.doe@example.com"
+
+    Character:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: "Monkey D. Luffy"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error message"
+
+tags:
+  - name: Utilisateurs
+    description: Gestion des utilisateurs (inscription, connexion, mise à jour, suppression)
+  - name: Personnages
+    description: Gestion des personnages du jeu (ajout, mise à jour, suppression)
+
 paths:
-  # Users endpoints
   /users:
     post:
       summary: Crée un nouvel utilisateur
+      tags: [Utilisateurs]
       requestBody:
         required: true
         content:
@@ -30,31 +73,31 @@ paths:
           description: Utilisateur créé
           content:
             application/json:
-              example:
-                id: 1
-                email: "john.doe@example.com"
+              schema:
+                $ref: "#/components/schemas/User"
         '400':
           description: Informations manquantes
           content:
             application/json:
-              example:
-                error: "Please enter all required information"
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '409':
           description: Email déjà existant
           content:
             application/json:
-              example:
-                error: "Email already exists"
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '500':
           description: Erreur serveur
           content:
             application/json:
-              example:
-                error: "Database error"
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /users/login:
     post:
       summary: Connexion utilisateur
+      tags: [Utilisateurs]
       requestBody:
         required: true
         content:
@@ -79,20 +122,19 @@ paths:
           description: Identifiants invalides
           content:
             application/json:
-              example:
-                error: "Invalid identifiers"
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '500':
           description: Erreur serveur
           content:
             application/json:
-              example:
-                error: "Database error"
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /users/{id}:
     patch:
       summary: Met à jour un utilisateur
-      security:
-        - bearerAuth: []
+      tags: [Utilisateurs]
       parameters:
         - name: id
           in: path
@@ -117,13 +159,17 @@ paths:
           description: Utilisateur mis à jour
           content:
             application/json:
-              example:
-                id: 1
-                email: "updated.email@example.com"
+              schema:
+                $ref: "#/components/schemas/User"
+        '400':
+          description: Mauvaise requête
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       summary: Supprime un utilisateur
-      security:
-        - bearerAuth: []
+      tags: [Utilisateurs]
       parameters:
         - name: id
           in: path
@@ -135,30 +181,25 @@ paths:
           description: Utilisateur supprimé avec succès
           content:
             application/json:
-              example:
-                id: 1
-                email: "john.doe@example.com"
+              schema:
+                $ref: "#/components/schemas/User"
 
-  # Characters endpoints
   /characters:
     get:
       summary: Récupère tous les personnages
+      tags: [Personnages]
       responses:
         '200':
           description: Liste des personnages
           content:
             application/json:
-              example:
-                - id: 1
-                  name: "Monkey D. Luffy"
-                - id: 2
-                  name: "Baggy"
-        '204':
-          description: Aucun personnage trouvé
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Character"
     post:
       summary: Crée un personnage
-      security:
-        - bearerAuth: []
+      tags: [Personnages]
       requestBody:
         required: true
         content:
@@ -174,19 +215,19 @@ paths:
           description: Personnage créé
           content:
             application/json:
-              example:
-                id: 3
-                name: "Roronoa Zoro"
+              schema:
+                $ref: "#/components/schemas/Character"
         '500':
           description: Erreur serveur
           content:
             application/json:
-              example:
-                error: "Database error"
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /characters/{id}:
     get:
       summary: Récupère un personnage par son ID
+      tags: [Personnages]
       parameters:
         - name: id
           in: path
@@ -198,37 +239,43 @@ paths:
           description: Personnage trouvé
           content:
             application/json:
-              example:
-                id: 1
-                name: "Monkey D. Luffy"
+              schema:
+                $ref: "#/components/schemas/Character"
         '404':
           description: Personnage non trouvé
           content:
             application/json:
-              example:
-                error: "Character not found"
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     patch:
       summary: Met à jour un personnage
-      security:
-        - bearerAuth: []
+      tags: [Personnages]
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Monkey D. Luffy Updated"
       responses:
         '200':
           description: Personnage mis à jour
           content:
             application/json:
-              example:
-                id: 1
-                name: "Monkey D. Luffy Updated"
+              schema:
+                $ref: "#/components/schemas/Character"
     delete:
       summary: Supprime un personnage
-      security:
-        - bearerAuth: []
+      tags: [Personnages]
       parameters:
         - name: id
           in: path
@@ -240,6 +287,5 @@ paths:
           description: Personnage supprimé
           content:
             application/json:
-              example:
-                id: 1
-                name: "Monkey D. Luffy"
+              schema:
+                $ref: "#/components/schemas/Character"

@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "author": "Lorenzo vandenkoornhuyse$",
   "scripts": {
-    "dev": "nodemon --exec ts-node ./src/index.ts",
+    "dev": "nodemon --exec ts-node --files ./src/index.ts",
     "start": "node ./build/index.js",
     "type-check": "tsc --noEmit",
     "build": "tsc",
