@@ -56,10 +56,6 @@ export const getDeckById = async (req: Request<CrudDeckParamsType, any, {}>, res
 export const createDeck = async (req: Request<{}, any, DeckCreateType>, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
-    if (!userId) {
-    res.status(401).json({ error: 'Unauthorized' });
-    return;
-    }
 
     const { name, characterIds } = req.body;
     if (!name) {

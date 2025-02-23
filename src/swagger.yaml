@@ -289,3 +289,237 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Character"
+
+  /decks:
+    get:
+      summary: Récupère tous les decks
+      tags: [Decks]
+      responses:
+        '200':
+          description: Liste des decks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Deck"
+        '204':
+          description: Aucun deck trouvé
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      summary: Crée un deck
+      tags: [Decks]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Straw Hat Pirates Deck"
+                characterIds:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2, 3]
+      responses:
+        '201':
+          description: Deck créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deck"
+        '400':
+          description: Données invalides
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '401':
+          description: Utilisateur non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /decks/{id}:
+    get:
+      summary: Récupère un deck par son ID
+      tags: [Decks]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Deck trouvé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deck"
+        '404':
+          description: Deck non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    patch:
+      summary: Met à jour un deck
+      tags: [Decks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Updated Deck Name"
+                characterIds:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2]
+      responses:
+        '200':
+          description: Deck mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deck"
+        '400':
+          description: Données invalides
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '404':
+          description: Deck non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      summary: Supprime un deck
+      tags: [Decks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Deck supprimé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deck"
+        '404':
+          description: Deck non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    Deck:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    name:
+      type: string
+      example: "Straw Hat Pirates Deck"
+    ownerId:
+      type: integer
+      example: 1
+    owner:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          example: "john.doe@example.com"
+    characters:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 1
+          name:
+            type: string
+            example: "Monkey D. Luffy"
+          affiliationId:
+            type: integer
+            example: 1
+          lifePoints:
+            type: integer
+            example: 1000
+          size:
+            type: number
+            example: 1.74
+          age:
+            type: integer
+            example: 19
+          weight:
+            type: integer
+            example: 70
+          imageUrl:
+            type: string
+            example: "https://example.com/image.jpg"
