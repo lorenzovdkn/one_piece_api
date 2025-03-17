@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import prisma from '../client'
 import _ from 'lodash';
 import { CrudUserParamsType, LoginType, UsersType } from '../types/common.type';
+import { verifyJWT } from '../common/auth.middleware';
 
 export const login = async (req: Request<{}, any, LoginType>, res: Response): Promise<void> => {
   try {
@@ -27,7 +28,8 @@ export const login = async (req: Request<{}, any, LoginType>, res: Response): Pr
     );
 
     res.status(200).send({
-      token,
+      token: token, 
+      userId : user.id
     });
 
   } catch (error: any) {
@@ -135,3 +137,35 @@ export const deleteUser = async (req : Request<CrudUserParamsType, any, UsersTyp
     res.status(500).send({ error: "Database error" });
   }
 }
+
+export const getUserById = async (req: Request<CrudUserParamsType, any, UsersType>, res : Response) : Promise<void> => {
+  try {
+    const id = parseInt(req.params.id);
+
+    if (isNaN(id)) {
+      res.status(400).send({error : 'Invalid User ID'});
+      return;
+    }
+
+    const user = await prisma.users.findUnique({
+      where: {id: id},
+      select: {
+        id: true,
+        email: true,
+      }
+    })
+
+    if (!user) {
+      res.status(404).json({ error: 'User not found.' });
+      return;
+    }
+
+    res.status(200).send(user);
+  } catch (error) {
+    res.status(500).send({ error: "Database error"})
+  }
+}
+
+export const validateToken = (req: Request, res: Response) => {
+  res.send({ valid: true, user: req.user });
+};

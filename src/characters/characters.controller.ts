@@ -13,6 +13,7 @@ export const getCharacters = async (req:Request, res:Response): Promise<void> =>
         }
         res.status(200).send(characters);
     }catch(error : any) {
+        console.error(" erreur prisma ", error)
         res.status(500).send( {error: "Database error"})
     }
 };

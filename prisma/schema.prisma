@@ -12,7 +12,7 @@ model Character {
   name        String    @unique
   affiliation  Affiliation @relation(fields: [affiliationId], references: [id])
   affiliationId Int
-  lifePoints  Int
+  lifePoints  Int?
   size        Float?
   age         Int?
   weight      Float?
