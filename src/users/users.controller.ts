@@ -1,91 +1,100 @@
-import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import prisma from '../client'
-import _ from 'lodash';
-import { CrudUserParamsType, LoginType, UsersType } from '../types/common.type';
-import { verifyJWT } from '../common/auth.middleware';
+import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import prisma from "../client";
+import _ from "lodash";
+import { CrudUserParamsType, LoginType, UsersType } from "../types/common.type";
 
-export const login = async (req: Request<{}, any, LoginType>, res: Response): Promise<void> => {
+export const login = async (
+  req: Request<{}, any, LoginType>,
+  res: Response,
+): Promise<void> => {
   try {
-    const { email, password} = req.body;
+    const { email, password } = req.body;
     const user = await prisma.users.findUnique({ where: { email: email } });
     if (!user) {
-      res.status(201).send({error : 'Invalid identifiers'});
+      res.status(201).send({ error: "Invalid identifiers" });
       return;
     }
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
-      res.status(400).send({error : 'Invalid identifiers'});
+      res.status(400).send({ error: "Invalid identifiers" });
       return;
     }
 
     const token = jwt.sign(
       { username: email, userId: user.id }, // Payload
       process.env.JWT_SECRET as jwt.Secret, // Secret
-      { expiresIn: process.env.JWT_EXPIRES_IN } // Expiration
+      { expiresIn: process.env.JWT_EXPIRES_IN }, // Expiration
     );
 
     res.status(200).send({
-      token: token, 
-      userId : user.id
+      token: token,
+      userId: user.id,
     });
-
-  } catch (error: any) {
+  } catch {
     res.status(500).send({ error: "Database error" });
   }
 };
 
-export const register = async (req: Request<{}, any, LoginType>, res: Response): Promise<void> => {
+export const register = async (
+  req: Request<{}, any, LoginType>,
+  res: Response,
+): Promise<void> => {
   const { email, password } = req.body;
 
   try {
     if (!email || !password) {
-      res.status(400).send({error : 'Please enter all required information'});
+      res.status(400).send({ error: "Please enter all required information" });
       return;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const emailExisted = await prisma.users.findUnique({ where: { email: email } },)
+    const emailExisted = await prisma.users.findUnique({
+      where: { email: email },
+    });
 
     if (emailExisted) {
-      res.status(409).send({error : 'Email already exists'});
+      res.status(409).send({ error: "Email already exists" });
       return;
     }
 
-    const user = await prisma.users.createMany({
+    await prisma.users.createMany({
       data: [
         {
           email: email,
-          password: hashedPassword
-        }
-      ]
-    })
+          password: hashedPassword,
+        },
+      ],
+    });
 
     res.status(201).send();
-  } catch (err: any) {
+  } catch {
     res.status(500).send({ error: "Database error" });
   }
 };
 
-export const updateUser = async (req: Request<CrudUserParamsType, any, UsersType>, res: Response): Promise<void> => {
+export const updateUser = async (
+  req: Request<CrudUserParamsType, any, UsersType>,
+  res: Response,
+): Promise<void> => {
   try {
     const id = parseInt(req.params.id, 10);
 
     if (isNaN(id)) {
-      res.status(400).send({error : 'Invalid User ID'});
+      res.status(400).send({ error: "Invalid User ID" });
       return;
     }
 
     const user = await prisma.users.findUnique({ where: { id: id } });
 
     if (!user) {
-      res.status(404).send({error : 'User not found' });
+      res.status(404).send({ error: "User not found" });
       return;
     }
 
-    const { email, password } = req.body
+    const { email, password } = req.body;
 
     const updatedData: any = {};
 
@@ -99,72 +108,78 @@ export const updateUser = async (req: Request<CrudUserParamsType, any, UsersType
     }
 
     if (_.isEmpty(updatedData)) {
-      res.status(400).send({error : 'No data provided to update'});
+      res.status(400).send({ error: "No data provided to update" });
       return;
     }
 
     const userUpdated = await prisma.users.update({
       where: { id: id },
       data: updatedData,
-    })
+    });
 
     res.status(200).send(userUpdated);
-  } catch (error: any) {
+  } catch {
     res.status(500).send({ error: "Database error" });
   }
 };
 
-export const deleteUser = async (req : Request<CrudUserParamsType, any, UsersType>, res  : Response) : Promise<void> => {
+export const deleteUser = async (
+  req: Request<CrudUserParamsType, any, UsersType>,
+  res: Response,
+): Promise<void> => {
   try {
     const id = parseInt(req.params.id);
 
     if (isNaN(id)) {
-      res.status(400).send({error : 'Invalid User ID'});
+      res.status(400).send({ error: "Invalid User ID" });
       return;
     }
 
     const user = await prisma.users.findUnique({ where: { id: id } });
 
     if (!user) {
-      res.status(404).send({error : 'User not found'});
+      res.status(404).send({ error: "User not found" });
       return;
     }
 
     const deletedUser = await prisma.users.delete({ where: { id: id } });
 
     res.status(200).send(deletedUser);
-  }catch (error : any) {
+  } catch {
     res.status(500).send({ error: "Database error" });
   }
-}
+};
 
-export const getUserById = async (req: Request<CrudUserParamsType, any, UsersType>, res : Response) : Promise<void> => {
+export const getUserById = async (
+  req: Request<CrudUserParamsType, any, UsersType>,
+  res: Response,
+): Promise<void> => {
   try {
     const id = parseInt(req.params.id);
 
     if (isNaN(id)) {
-      res.status(400).send({error : 'Invalid User ID'});
+      res.status(400).send({ error: "Invalid User ID" });
       return;
     }
 
     const user = await prisma.users.findUnique({
-      where: {id: id},
+      where: { id: id },
       select: {
         id: true,
         email: true,
-      }
-    })
+      },
+    });
 
     if (!user) {
-      res.status(404).json({ error: 'User not found.' });
+      res.status(404).json({ error: "User not found." });
       return;
     }
 
     res.status(200).send(user);
-  } catch (error) {
-    res.status(500).send({ error: "Database error"})
+  } catch {
+    res.status(500).send({ error: "Database error" });
   }
-}
+};
 
 export const validateToken = (req: Request, res: Response) => {
   res.send({ valid: true, user: req.user });

@@ -69,25 +69,25 @@ paths:
                   type: string
                   example: "password123"
       responses:
-        '201':
+        "201":
           description: Utilisateur créé
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-        '400':
+        "400":
           description: Informations manquantes
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-        '409':
+        "409":
           description: Email déjà existant
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-        '500':
+        "500":
           description: Erreur serveur
           content:
             application/json:
@@ -112,19 +112,19 @@ paths:
                   type: string
                   example: "password123"
       responses:
-        '200':
+        "200":
           description: Connexion réussie avec un token JWT
           content:
             application/json:
               example:
                 token: "mockedToken"
-        '400':
+        "400":
           description: Identifiants invalides
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-        '500':
+        "500":
           description: Erreur serveur
           content:
             application/json:
@@ -155,13 +155,13 @@ paths:
                   type: string
                   example: "newPassword123"
       responses:
-        '200':
+        "200":
           description: Utilisateur mis à jour
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-        '400':
+        "400":
           description: Mauvaise requête
           content:
             application/json:
@@ -177,7 +177,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Utilisateur supprimé avec succès
           content:
             application/json:
@@ -189,7 +189,7 @@ paths:
       summary: Récupère tous les personnages
       tags: [Personnages]
       responses:
-        '200':
+        "200":
           description: Liste des personnages
           content:
             application/json:
@@ -211,13 +211,13 @@ paths:
                   type: string
                   example: "Monkey D. Luffy"
       responses:
-        '201':
+        "201":
           description: Personnage créé
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Character"
-        '500':
+        "500":
           description: Erreur serveur
           content:
             application/json:
@@ -235,13 +235,13 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Personnage trouvé
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Character"
-        '404':
+        "404":
           description: Personnage non trouvé
           content:
             application/json:
@@ -267,7 +267,7 @@ paths:
                   type: string
                   example: "Monkey D. Luffy Updated"
       responses:
-        '200':
+        "200":
           description: Personnage mis à jour
           content:
             application/json:
@@ -283,7 +283,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Personnage supprimé
           content:
             application/json:
@@ -295,7 +295,7 @@ paths:
       summary: Récupère tous les decks
       tags: [Decks]
       responses:
-        '200':
+        "200":
           description: Liste des decks
           content:
             application/json:
@@ -303,9 +303,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Deck"
-        '204':
+        "204":
           description: Aucun deck trouvé
-        '500':
+        "500":
           description: Erreur serveur
           content:
             application/json:
@@ -333,25 +333,25 @@ paths:
                     type: integer
                   example: [1, 2, 3]
       responses:
-        '201':
+        "201":
           description: Deck créé
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Deck"
-        '400':
+        "400":
           description: Données invalides
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-        '401':
+        "401":
           description: Utilisateur non authentifié
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-        '500':
+        "500":
           description: Erreur serveur
           content:
             application/json:
@@ -369,19 +369,19 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Deck trouvé
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Deck"
-        '404':
+        "404":
           description: Deck non trouvé
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-        '500':
+        "500":
           description: Erreur serveur
           content:
             application/json:
@@ -415,25 +415,25 @@ paths:
                     type: integer
                   example: [1, 2]
       responses:
-        '200':
+        "200":
           description: Deck mis à jour
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Deck"
-        '400':
+        "400":
           description: Données invalides
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-        '404':
+        "404":
           description: Deck non trouvé
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-        '500':
+        "500":
           description: Erreur serveur
           content:
             application/json:
@@ -452,74 +452,21 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Deck supprimé
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Deck"
-        '404':
+        "404":
           description: Deck non trouvé
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-        '500':
+        "500":
           description: Erreur serveur
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-
-components:
-  schemas:
-    Deck:
-  type: object
-  properties:
-    id:
-      type: integer
-      example: 1
-    name:
-      type: string
-      example: "Straw Hat Pirates Deck"
-    ownerId:
-      type: integer
-      example: 1
-    owner:
-      type: object
-      properties:
-        id:
-          type: integer
-          example: 1
-        email:
-          type: string
-          example: "john.doe@example.com"
-    characters:
-      type: array
-      items:
-        type: object
-        properties:
-          id:
-            type: integer
-            example: 1
-          name:
-            type: string
-            example: "Monkey D. Luffy"
-          affiliationId:
-            type: integer
-            example: 1
-          lifePoints:
-            type: integer
-            example: 1000
-          size:
-            type: number
-            example: 1.74
-          age:
-            type: integer
-            example: 19
-          weight:
-            type: integer
-            example: 70
-          imageUrl:
-            type: string
-            example: "https://example.com/image.jpg"

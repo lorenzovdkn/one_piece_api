@@ -1,17 +1,20 @@
-import { Request, Response } from 'express';
-import prisma from '../client';
-import _ from 'lodash';
-import { CrudDeckParamsType, DeckCreateType, DeckUpdateType } from '../types/common.type';
+import { Request, Response } from "express";
+import prisma from "../client";
+import {
+  CrudDeckParamsType,
+  DeckCreateType,
+  DeckUpdateType,
+} from "../types/common.type";
 
 export const getDecks = async (req: Request, res: Response): Promise<void> => {
   try {
     const decks = await prisma.deck.findMany({
       include: {
         owner: {
-            select: {
-              id: true,
-            },
+          select: {
+            id: true,
           },
+        },
         characters: true,
       },
     });
@@ -20,46 +23,52 @@ export const getDecks = async (req: Request, res: Response): Promise<void> => {
       return;
     }
     res.status(200).send(decks);
-  } catch (error: any) {
-    res.status(500).send({ error: 'Database error' });
+  } catch {
+    res.status(500).send({ error: "Database error" });
   }
 };
 
-export const getDeckById = async (req: Request<CrudDeckParamsType, any, {}>, res: Response): Promise<void> => {
+export const getDeckById = async (
+  req: Request<CrudDeckParamsType, any, {}>,
+  res: Response,
+): Promise<void> => {
   try {
     const deckId = parseInt(req.params.id, 10);
     if (isNaN(deckId)) {
-      res.status(400).json({ error: 'ID invalid. Must be a number.' });
+      res.status(400).json({ error: "ID invalid. Must be a number." });
       return;
     }
     const deck = await prisma.deck.findUnique({
       where: { id: deckId },
       include: {
         owner: {
-            select: {
-              id: true,
-            },
+          select: {
+            id: true,
           },
+        },
         characters: true,
       },
     });
     if (!deck) {
-      res.status(404).json({ error: 'Deck not found.' });
+      res.status(404).json({ error: "Deck not found." });
       return;
     }
     res.status(200).send(deck);
-  } catch (error: any) {
-    res.status(500).send({ error: 'Database error' });
+  } catch {
+    res.status(500).send({ error: "Database error" });
   }
 };
 
-export const createDeck = async (req: Request<{}, any, DeckCreateType>, res: Response): Promise<void> => {
+export const createDeck = async (
+  req: Request<{}, any, DeckCreateType>,
+  res: Response,
+): Promise<void> => {
   try {
     const userId = req.user?.id;
 
     const { name, characterIds } = req.body;
     if (!name) {
-      res.status(400).send({ error: 'Missing field: name' });
+      res.status(400).send({ error: "Missing field: name" });
       return;
     }
 
@@ -82,22 +91,27 @@ export const createDeck = async (req: Request<{}, any, DeckCreateType>, res: Res
       },
     });
     res.status(201).send(newDeck);
-  } catch (error: any) {
-    res.status(500).send({ error: 'Database error' });
+  } catch {
+    res.status(500).send({ error: "Database error" });
   }
 };
 
-export const updateDeck = async (req: Request<CrudDeckParamsType, any, DeckUpdateType>, res: Response): Promise<void> => {
+export const updateDeck = async (
+  req: Request<CrudDeckParamsType, any, DeckUpdateType>,
+  res: Response,
+): Promise<void> => {
   try {
     const deckId = parseInt(req.params.id, 10);
     if (isNaN(deckId)) {
-      res.status(400).send({ error: 'ID invalid. Must be a number.' });
+      res.status(400).send({ error: "ID invalid. Must be a number." });
       return;
     }
 
-    const existingDeck = await prisma.deck.findUnique({ where: { id: deckId } });
+    const existingDeck = await prisma.deck.findUnique({
+      where: { id: deckId },
+    });
     if (!existingDeck) {
-      res.status(404).send({ error: 'Deck not found.' });
+      res.status(404).send({ error: "Deck not found." });
       return;
     }
 
@@ -119,22 +133,27 @@ export const updateDeck = async (req: Request<CrudDeckParamsType, any, DeckUpdat
       },
     });
     res.status(200).send(updatedDeck);
-  } catch (error: any) {
-    res.status(500).send({ error: 'Database error' });
+  } catch {
+    res.status(500).send({ error: "Database error" });
   }
 };
 
-export const deleteDeck = async (req: Request<CrudDeckParamsType, any, {}>, res: Response): Promise<void> => {
+export const deleteDeck = async (
+  req: Request<CrudDeckParamsType, any, {}>,
+  res: Response,
+): Promise<void> => {
   try {
     const deckId = parseInt(req.params.id, 10);
     if (isNaN(deckId)) {
-      res.status(400).send({ error: 'ID invalid. Must be a number.' });
+      res.status(400).send({ error: "ID invalid. Must be a number." });
       return;
     }
 
-    const existingDeck = await prisma.deck.findUnique({ where: { id: deckId } });
+    const existingDeck = await prisma.deck.findUnique({
+      where: { id: deckId },
+    });
     if (!existingDeck) {
-      res.status(404).send({ error: 'Deck not found.' });
+      res.status(404).send({ error: "Deck not found." });
       return;
     }
 
@@ -142,7 +161,7 @@ export const deleteDeck = async (req: Request<CrudDeckParamsType, any, {}>, res:
       where: { id: deckId },
     });
     res.status(200).send(deletedDeck);
-  } catch (error: any) {
-    res.status(500).send({ error: 'Database error' });
+  } catch {
+    res.status(500).send({ error: "Database error" });
   }
 };
