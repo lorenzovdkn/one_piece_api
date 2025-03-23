@@ -28,6 +28,34 @@ export const getDecks = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+export const getDeckByCharacterId = async (
+  req: Request<{ id: string }>,
+  res: Response,
+): Promise<void> => {
+  try {
+    const characterId = parseInt(req.params.id, 10);
+
+    if (isNaN(characterId)) {
+      res
+        .status(400)
+        .json({ error: "Character ID invalid. Must be a number." });
+      return;
+    }
+
+    const decks = await prisma.deck.findMany({
+      where: { ownerId: characterId },
+      include: {
+        owner: { select: { id: true } },
+        characters: true,
+      },
+    });
+
+    res.status(200).send(decks);
+  } catch {
+    res.status(500).json({ error: "Database error" });
+  }
+};
+
 export const getDeckById = async (
   req: Request<CrudDeckParamsType, any, {}>,
   res: Response,
