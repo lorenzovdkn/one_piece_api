@@ -45,8 +45,8 @@ cd one_piece_api
 # Installer les dépendances
 npm ci
 
-# Configurer les variables d'environnement
-# Créer un fichier .env basé sur .env.example (déjà configuré)
+# Créer le fichier .env depuis .env.example
+cp .env.example .env
 
 # Initialiser la base de données + Peupler la BD avec les données initiales
 npm run db:reset
