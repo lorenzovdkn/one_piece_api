@@ -8,7 +8,7 @@
     "dev": "nodemon --exec ts-node --files ./src/index.ts",
     "start": "node ./build/index.js",
     "type-check": "tsc --noEmit",
-    "build": "tsc",
+    "build": "tsc && cp src/swagger.yaml build/swagger.yaml",
     "db:reset": "prisma migrate reset --force && prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
