@@ -18,7 +18,7 @@ swaggerDocument.servers = [
 ];
 
 app.use(express.json());
-app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/images", express.static(path.join(__dirname, "../public/images")));
 app.use(
   cors({
