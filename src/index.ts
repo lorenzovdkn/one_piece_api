@@ -13,6 +13,10 @@ export const app = express();
 const port = process.env.PORT || 3000;
 const swaggerDocument = YAML.load(path.join(__dirname, "./swagger.yaml"));
 
+swaggerDocument.servers = [
+  { url: process.env.API_BASE_URL || 'http://localhost:3000' }
+];
+
 app.use(express.json());
 app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/images", express.static(path.join(__dirname, "../public/images")));
