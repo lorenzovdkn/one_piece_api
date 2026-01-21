@@ -19,6 +19,11 @@ swaggerDocument.servers = [
 
 app.use(express.json());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+app.get("/", (_req, res) => {
+  res.redirect("/api-docs");
+});
+
 app.use("/images", express.static(path.join(__dirname, "../public/images")));
 app.use(
   cors({
