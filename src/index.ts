@@ -14,7 +14,7 @@ const port = process.env.PORT || 3000;
 const swaggerDocument = YAML.load(path.join(__dirname, "./swagger.yaml"));
 
 app.use(express.json());
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/images", express.static(path.join(__dirname, "../public/images")));
 app.use(
   cors({
