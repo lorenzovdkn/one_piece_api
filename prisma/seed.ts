@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 // Définition des personnages avec leurs images locales, affiliations et primes
 const MAX_INT = 2147483647; // Valeur max d'un Int en Prisma (SQLite, PostgreSQL, MySQL)
-const BASE_IMAGE_URL = "http://localhost:3000/images/"; // URL publique pour accéder aux images
+const BASE_IMAGE_URL = process.env.API_BASE_URL ? `${process.env.API_BASE_URL}/images/` : "http://localhost:3000/images/"; // URL publique pour accéder aux images
 
 const charactersData = [
   {

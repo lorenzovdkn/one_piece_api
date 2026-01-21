@@ -5,7 +5,7 @@ info:
   description: API pour gérer les utilisateurs et les personnages dans le jeu de cartes ONE PIECE.
 
 servers:
-  - url: http://localhost:3000
+  - url: ${API_BASE_URL}
     description: Serveur local
 
 security:
